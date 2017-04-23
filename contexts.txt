@@ -1,2 +1,2 @@
-"Politica": "medio oriente", "politica interna"
-"Altro" : "cyber security", "libri", "università","fisica"
+"Politica":"medio oriente" "politica interna"
+"Altro":"cyber security" "libri" "università" "fisica"

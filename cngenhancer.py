@@ -19,7 +19,7 @@ class Tag:
 	def __init__(self):
 		self.urls=list()
 	def addUrl(self,myUrlName):
-		if myUrlName in UrlDatabase.keys() : 
+		if myUrlName in UrlDatabase : 
 			self.append(UrlDatabase[myUrlName])
 	def listUrls(self):
 		return self.urls;
@@ -29,7 +29,21 @@ def main():
 	#Initialize global data structures 
 	GlobTagList=list()
 	ContextDict=dict()
-	#TODO: parse the file with context and tags
+	#Parse the file with context and tags
+	for line in open("contexts.txt"):
+		contName, tagNames = line.split(":",1)
+		contName.strip('"')
+		if contName in ContextDict:
+			for tag in tagNames.split('" "'):
+				ContextDict[contName].append(tag.strip('"'))
+		else:
+			ContextDict[contName]=list()
+			for tag in tagNames.split('" "'):
+				ContextDict[contName].append(tag.strip('"'))
+	
+	print("End parsing") #DEBUG
+	print(ContextDict)   #DEBUG
+	sys.exit()				#DEBUG
 	
 	
 	UrlDatabase=dict()
@@ -57,3 +71,7 @@ def main():
 	return
 
 if __name__=="__main__": main()
+
+
+
+
