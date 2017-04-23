@@ -1,5 +1,7 @@
 import sys
 
+#On the use of a single file for multiple classes:
+#http://stackoverflow.com/questions/2864366/are-classes-in-python-in-different-files
 class Context: 
 	#A class for the Context data structure;
 	#A Context is a container for related tags
