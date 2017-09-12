@@ -29,7 +29,6 @@ class Tag:
 	
 def main():
 	#Initialize global data structures 
-	GlobTagList=list()
 	ContextDict=dict()
 	#Parse the file with context and tags
 	for line in open("contexts.txt"):
@@ -48,9 +47,8 @@ def main():
 	sys.exit()				#DEBUG
 	
 	
-	UrlDatabase=dict()
-	#TODO: parse the file with urls and update tags  
-	
+	#parse the file with urls and update tags  
+	UrlDatabase=extract('urls.html')
 	#This is the main loop 
 	exitFlag=False;
 	while(not exitFlag):
