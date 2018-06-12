@@ -1,7 +1,7 @@
 # temp files
 *.py~
-cgnenhancer/*.py~
+*.py~
 
 # Python cache
-__pycache__/*
-cgnenhancer/__pycache__/*
+*.pyc
+*.pyc~
