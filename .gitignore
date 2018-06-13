@@ -5,3 +5,6 @@
 # Python cache
 *.pyc
 *.pyc~
+
+# Ipython
+.ipynb_checkpoints/*
