@@ -1,6 +1,10 @@
 import urllib
 from bs4 import BeautifulSoup
 
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.svm import LinearSVC
+from sklearn.multiclass import OneVsRestClassifier
+
 
 ###############################################################################
 # Class for contexts                                                          #
@@ -39,11 +43,69 @@ class Article:
     def __init__(self, url):
         assert isinstance(url, str)
         self.url = url
-        # the option lxml avoids a warning
-        html = urllib.request.urlopen(url)
-        page = BeautifulSoup(html.read(), "lxml")
-        self.title = page.title.string
-        self.preview = ""
+        self.loaded = False
+        self.title = ""
+        self.content = ""
+        self.suggested_tags = []
+        try:
+            self.loaded = True
+            html = urllib.request.urlopen(url)
+            self.page = BeautifulSoup(html.read(), 'lxml')
+            if self.page.title is not None:
+                self.title = self.page.title.string
+            # Basic web scraping procedure
+            # Should be refined using information on the single site!
+            for x in self.page.find_all("p"):
+                for i in x.contents:
+                    if i.string is not None:
+                        self.content += i.string
+        except urllib.error.URLError as e:
+            print("Unable to open url", url)
+            print("Error: ", e.reason)
+            pass
+
+    def suggest_tags(self, article_list, url_to_tag):
+        if self.loaded is not False:
+            # lists for learning
+            # NOTE: learning is performed assigning a binary vector (a category)
+            # to each text. A 1 in the i-th position means that the article was
+            # tagged using the i-th tag
+            tags = []
+            texts = []
+            for article in article_list:
+                for tag in url_to_tag[article.url]:
+                    if tag not in tags:
+                        tags.append(tag)
+                texts.append(article.content)
+            # Generate one feature vector for each text
+            label_vectors = [
+                [1 if t in url_to_tag[article.url] else 0
+                 for t in tags]
+                for article in article_list]
+            # vectorizer setup
+            pattern = '(?u)\\b[A-Za-z]{3,}'
+            # TODO: correct classification of italian articles
+            cv = CountVectorizer(max_df=0.95,
+                                 min_df=0.01,
+                                 stop_words='english',
+                                 token_pattern=pattern,
+                                 ngram_range=(1, 3))
+            cv_corpus = cv.fit_transform(texts)
+            tfidf = TfidfTransformer(sublinear_tf=True)
+            # tf idf matrix: (articles x words)
+            tfidf_train_matrix = tfidf.fit_transform(cv_corpus)
+            classifier = LinearSVC()
+            multiclass_clf = OneVsRestClassifier(classifier)
+            multiclass_clf.fit(tfidf_train_matrix, label_vectors)
+            # create the matrix for the current article
+            cv_this_article = cv.transform([self.content])
+            tfidf_this_article = tfidf.transform(cv_this_article)
+            #
+            suggested_tags = multiclass_clf.predict_proba(tfidf_this_article)
+            print(suggested_tags)
+            # for tag in suggested_tags:
+            #    if tag not in url_to_tag[self.url]:
+            #        self.suggested_tags.append(tag)
 
 
 ###############################################################################
@@ -145,7 +207,12 @@ def main():
                         suggested_list = []
                         print(suggested_list)
                     elif tag_choice == 'St':
-                        print
+                        for article in articles:
+                            print("[+++] ", article.title)
+                            print("     Tags:", url_to_tag[article.url])
+                            article.suggest_tags(articles, url_to_tag)
+                            print("     Suggested Tags:",
+                                  article.suggested_tags)
                 else:
                     pass
         else:

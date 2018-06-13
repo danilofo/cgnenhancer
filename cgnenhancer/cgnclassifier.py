@@ -1,12 +1,3 @@
-'''
-Created on 24 apr 2017
-
-@author: danilo
-'''
-
-#The machine learning environment is the SciKit Learn package
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-
 class TextClassifier:
     '''
     One object of this class is instanciated each time a context is opened;
