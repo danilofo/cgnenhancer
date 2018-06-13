@@ -1,6 +1,8 @@
 import urllib
 from bs4 import BeautifulSoup
 
+import numpy
+
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.svm import LinearSVC
 from sklearn.multiclass import OneVsRestClassifier
@@ -78,10 +80,10 @@ class Article:
                         tags.append(tag)
                 texts.append(article.content)
             # Generate one feature vector for each text
-            label_vectors = [
+            label_vectors = numpy.array([
                 [1 if t in url_to_tag[article.url] else 0
                  for t in tags]
-                for article in article_list]
+                for article in article_list])
             # vectorizer setup
             pattern = '(?u)\\b[A-Za-z]{3,}'
             # TODO: correct classification of italian articles
@@ -101,7 +103,7 @@ class Article:
             cv_this_article = cv.transform([self.content])
             tfidf_this_article = tfidf.transform(cv_this_article)
             #
-            suggested_tags = multiclass_clf.predict_proba(tfidf_this_article)
+            suggested_tags = multiclass_clf.predict(tfidf_this_article)
             print(suggested_tags)
             # for tag in suggested_tags:
             #    if tag not in url_to_tag[self.url]:
@@ -196,7 +198,7 @@ def main():
                 if tag_choice == 'Q':
                     back_to_main_menu = True
                 elif tag_choice in actions:
-                    articles = [Article(art_url, ) for art_url
+                    articles = [Article(art_url) for art_url
                                 in current_context.articles]
                     if tag_choice == 'A':
                         for art in articles:
