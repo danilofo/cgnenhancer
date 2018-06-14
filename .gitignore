@@ -8,3 +8,6 @@
 
 # Ipython
 .ipynb_checkpoints/*
+
+#ignore the private list of urls
+new_urls.html
