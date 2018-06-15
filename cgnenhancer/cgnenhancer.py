@@ -17,23 +17,24 @@ class Context:
     def __init__(self,
                  name,
                  articles,
-                 articles_db):
+                 articles_dict):
         assert isinstance(name, str)
         assert isinstance(articles, list)
         # A context contains articles and tags
         self.name = name
         self.articles = articles
+        self.articles_dict = articles_dict
         self.tags = []
         for art in articles:
-            for tag in articles_db[art]:
+            for tag in self.articles_dict[art]:
                 if tag not in self.tags:
                     self.tags.append(tag)
 
-    def addArticle(self, myArticle):
-        assert isinstance(myArticle, Article)
-        if myArticle not in self.articles:
-            self.articles.append(myArticle)
-        for tag in myArticle.tags:
+    def addArticle(self, my_article):
+        assert isinstance(my_article, Article)
+        if my_article not in self.articles:
+            self.articles.append(my_article)
+        for tag in self.articles_dict[my_article.url]:
             if tag not in self.tags:
                 self.tags.append(tag)
 
@@ -69,7 +70,7 @@ class Article:
     def suggest_tags(self, article_list, url_to_tag):
         if self.loaded is not False:
             # lists for learning
-            # NOTE: learning is performed assigning a binary vector (a category)
+            # NOTE: learning is performed assigning a binary vector
             # to each text. A 1 in the i-th position means that the article was
             # tagged using the i-th tag
             tags = []
@@ -105,9 +106,6 @@ class Article:
             #
             suggested_tags = multiclass_clf.predict(tfidf_this_article)
             print(suggested_tags)
-            # for tag in suggested_tags:
-            #    if tag not in url_to_tag[self.url]:
-            #        self.suggested_tags.append(tag)
 
 
 ###############################################################################
@@ -143,15 +141,20 @@ def extract_urls(namefile):
 def read_contexts_from_txt(fname):
     assert isinstance(fname, str)
     # Parse the file with context and urls
-    context_dict = {}
+    context_to_url = {}
+    url_to_contexts = {}
     for line in open(fname):
         context_name, url = line.split(":", 1)
-        if context_name not in context_dict.keys():
-            context_dict[context_name] = list()
-        if url not in context_dict[context_name]:
-            url = url.strip("\n").strip(" ")
-            context_dict[context_name].append(url)
-    return context_dict
+        url = url.strip("\n").strip(" ")
+        if context_name not in context_to_url.keys():
+            context_to_url[context_name] = list()
+        if url not in url_to_contexts.keys():
+            url_to_contexts[url] = []
+        if url not in context_to_url[context_name]:
+            context_to_url[context_name].append(url)
+        if context_name not in url_to_contexts[url]:
+            url_to_contexts[url].append(context_name)
+    return context_to_url, url_to_contexts
 
 
 ###############################################################################
@@ -162,8 +165,9 @@ def main():
     lev_spaces = "   "
     exit_flag = False
     url_to_tag, tag_to_url = extract_urls("./urls.html")
-    contexts_dict = read_contexts_from_txt(contexts_filename)
-    contexts = list(contexts_dict.keys())
+    contexts_to_url, url_to_contexts = read_contexts_from_txt(
+        contexts_filename)
+    contexts = list(contexts_to_url.keys())
     while not exit_flag:
         # Main menu loop
         print("[*] Cognitive enhancer debug version")
@@ -180,7 +184,7 @@ def main():
             context_choice = int(context_choice)
             name = contexts_mapper[context_choice]
             current_context = Context(name,
-                                      contexts_dict[name],
+                                      contexts_to_url[name],
                                       url_to_tag)
             back_to_main_menu = False
             while not back_to_main_menu:
