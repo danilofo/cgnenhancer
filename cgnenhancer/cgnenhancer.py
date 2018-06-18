@@ -30,13 +30,17 @@ class Context:
                 if tag not in self.tags:
                     self.tags.append(tag)
 
-    def addArticle(self, my_article):
+    def add_article(self, my_article):
         assert isinstance(my_article, Article)
         if my_article not in self.articles:
             self.articles.append(my_article)
         for tag in self.articles_dict[my_article.url]:
             if tag not in self.tags:
                 self.tags.append(tag)
+
+    def suggest_articles(self):
+        """TODO """
+        return
 
 
 ###############################################################################
@@ -155,3 +159,14 @@ def read_contexts_from_txt(fname):
         if context_name not in url_to_contexts[url]:
             url_to_contexts[url].append(context_name)
     return context_to_url, url_to_contexts
+
+
+def write_contexts_to_txt(fname, context_to_url):
+    assert isinstance(fname, str)
+    assert isinstance(context_to_url, dict)
+    ofile = open(fname, "w")
+    for k in context_to_url.keys():
+        for url in context_to_url[k]:
+            ofile.write("{}: {}".format(context_to_url[k], url))
+    ofile.close()
+    return
