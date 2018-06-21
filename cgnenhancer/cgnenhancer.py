@@ -17,16 +17,16 @@ class Context:
     def __init__(self,
                  name,
                  articles,
-                 articles_dict):
+                 url_to_tag):
         assert isinstance(name, str)
         assert isinstance(articles, list)
         # A context contains articles and tags
         self.name = name
         self.articles = articles
-        self.articles_dict = articles_dict
+        self.url_to_tag = url_to_tag
         self.tags = []
         for art in articles:
-            for tag in self.articles_dict[art]:
+            for tag in self.url_to_tag[art]:
                 if tag not in self.tags:
                     self.tags.append(tag)
 
@@ -34,7 +34,7 @@ class Context:
         assert isinstance(my_article, Article)
         if my_article not in self.articles:
             self.articles.append(my_article)
-        for tag in self.articles_dict[my_article.url]:
+        for tag in self.url_to_tag[my_article.url]:
             if tag not in self.tags:
                 self.tags.append(tag)
 
