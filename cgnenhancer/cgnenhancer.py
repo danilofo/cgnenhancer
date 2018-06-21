@@ -116,6 +116,9 @@ class Article:
 # Utilities                                                                   #
 ###############################################################################
 def extract_urls(namefile):
+    """
+    Author: Carlo De Donno
+    """
     url_to_tag = dict()
     url_list = open(namefile, 'r')
     # builds a dictionary with urls as keys and tags as values
