@@ -5,9 +5,10 @@ from cgnenhancer import Article, Context, extract_urls, read_contexts_from_txt
 # Main Loop                                                                   #
 ###############################################################################
 def main():
-    contexts_filename = "./contexts.txt"
     exit_flag = False
-    url_to_tag, tag_to_url = extract_urls("./urls.html")
+    settings = Settings()
+    contexts_filename = settings.contexts_fname
+    url_to_tag, tag_to_url = extract_urls(settings.urls_fname)
     contexts_to_url, url_to_contexts = read_contexts_from_txt(
         contexts_filename)
     contexts = list(contexts_to_url.keys())
@@ -16,7 +17,7 @@ def main():
         print("[*] Cognitive enhancer CLI")
         contexts_mapper = {i + 1: contexts[i] for i in range(len(contexts))}
         print("[+] You want to:")
-        print("    (C) Visualize your contexts")
+        print("    (L) List your contexts")
         print("    (A) Add and modify a new context")
         print("    (N) Contextualize last added news")
         print("    (X) Exit")
@@ -24,10 +25,20 @@ def main():
         if context_choice == "X":
             exit_flag = True
         elif context_choice == "A":
-            add_new_context()
+            articles = [Article(art_url) for art_url
+                        in url_to_tag.keys()]
+            url_to_article = {a.url: a for a in articles}
+            create_new_context(contexts,
+                               contexts_to_url,
+                               url_to_article,
+                               url_to_contexts,
+                               url_to_tag,
+                               tag_to_url,
+                               settings)
         elif context_choice == "N":
-            contextualize_new(contexts_mapper, contexts_to_url, url_to_tag)
-        elif context_choice == "C":
+            print("TODO!")
+            pass
+        elif context_choice == "L":
             lev_spaces = "   "
             print("[+] Available contexts:")
             for k in contexts_mapper.keys():
@@ -53,23 +64,134 @@ def main():
 ##############################################################################
 # Functionalities                                                            #
 ##############################################################################
-def contextualize_new():
-    """ Propose contexts for news with not associated with any  context"""
+def contextualize_new(articles,
+                      contexts,
+                      url_to_contexts,
+                      contexts_to_url,
+                      url_to_tag,
+                      tag_to_url):
+    """
+    Propose contexts for news with not associated with any context
+
+    Arguments
+    ---------
+    articles: list of Article objs ???
+    contexts: list of Context objs
+    url_to_contexts: dict
+    contexts_to_url: dict
+    url_to_tag: dict
+    """
     return
 
-def add_new_context():
-    """ TODO """
+
+def save_contexts(contexts, contexts_to_url, contexts_fname):
+    """ Utility to save contexts to file"""
+    contexts_ofile = open(contexts_fname)
+    for c in contexts:
+        for url in contexts_to_url[c]:
+            print(c.name + " : " + url)
+    contexts_ofile.close()
+
+
+def create_new_context(contexts,
+                       contexts_to_url,
+                       url_to_article,
+                       url_to_contexts,
+                       url_to_tag,
+                       tag_to_url,
+                       settings):
+    """
+    Create a new context interactively and populate it
+
+    Arguments
+    ---------
+    articles: list of Article objs
+    contexts: list of Context objs
+    contexts_to_url: dict
+    url_to_contexts: dict
+    tag_to_url: dict
+    """
+    print("[+] Insert the name of the new context:")
+    context_name = input("> ")
+    articles = list(url_to_article.keys())
+    context = Context(context_name,
+                      articles,
+                      url_to_tag)
+    # Add to the list of contexts
+    contexts.append(context)
+    print("Context " + context_name + " created successfully")
+    print("Select a way to populate it:")
+    print("   (T) Assign tags to this context")
+    print("   (N) Choose from articles without a context")
+    print("   (A) Choose from the complete list of articles")
+    print("   (Q) Go back and discard changes")
+    back_to_prev_menu = False
+    while not back_to_prev_menu:
+        choice = input("> ")
+        if choice == "T":
+            print("Available tags:")
+            for tag in tag_to_url.keys():
+                print(tag)
+            print()
+            print("Choose a tag names separated by comma (without spaces)")
+            print("or exit (X)")
+            tag_list = []
+            stop_reading = False
+            while not stop_reading:
+                line = input("> ")
+                if line == "X":
+                    stop_reading = True
+                else:
+                    line = line.split(",")
+                    for tag_str in line:
+                        tag_list.append(tag_str)
+                    print("Do you want to add the following articles? N/y")
+                    for tag in tag_list:
+                        if tag in tag_to_url.keys():
+                            print("Tag: " + tag)
+                            for url in tag_to_url[tag]:
+                                print(url_to_article[url].title)
+                        else:
+                            print("[!!!] Invalid tag " + tag)
+                    choice = input("> ")
+                    if choice == "y":
+                        for tag in tag_list:
+                            if tag in tag_to_url.keys():
+                                for url in tag_to_url[tag]:
+                                    context.add_article(url_to_article[url])
+                        save_contexts(contexts,
+                                      contexts_to_url,
+                                      settings.contexts_fname)
+                        print("[+] Creation completed")
+                    else:
+                        print("[!] Undo!")
+        elif choice == "N":
+            print("TODO: NOT YET IMPLEMENTED")
+            pass
+        elif choice == "A":
+            print("TODO: NOT YET IMPLEMENTED")
+            pass
+        elif choice == "Q":
+            back_to_prev_menu = True
     return
 
 
 def view_context(current_context,
                  contexts_to_url,
                  url_to_tag):
-    """ View current context and its articles
+    """
+    View current context and its articles
+
+    Arguments
+    ---------
+    current_context: Context
+    contexts_to_url: dict
+    url_to_tag: dict
 
     Return
     ------
-    back_to_main_menu: bool, """
+    back_to_main_menu: bool, true if user wants to go back
+    """
     lev_spaces = "   "
     print("Context: " + current_context.name)
     # TODO: print the list of available tags
@@ -103,6 +225,13 @@ def view_context(current_context,
                 print("     Suggested Tags:",
                       article.suggested_tags)
     return back_to_main_menu
+
+
+class Settings():
+    """ Utility to store settings """
+    def __init__(self):
+        self.contexts_fname = "./contexts.txt"
+        self.urls_fname = "./urls.html"
 
 
 if __name__ == "__main__":
