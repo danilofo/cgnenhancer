@@ -1,17 +1,31 @@
 from cgnenhancer import Article, Context, extract_urls, read_contexts_from_txt
 
-
 ###############################################################################
 # Main Loop                                                                   #
 ###############################################################################
 def main():
+    # Basic init
     exit_flag = False
     settings = Settings()
+    # Create the dictionaries for contexts, tag and urls
     contexts_filename = settings.contexts_fname
     url_to_tag, tag_to_url = extract_urls(settings.urls_fname)
     contexts_to_url, url_to_contexts = read_contexts_from_txt(
         contexts_filename)
-    contexts = list(contexts_to_url.keys())
+    # Create the list of Contexts and Articles
+    articles = []
+    print("Downloading articles:")
+    counter = 0
+    for art_url in url_to_tag.keys():
+        counter += 1
+        Article(art_url)
+        #progress_bar = "=" * counter
+        #print("\t" + progress_bar, end=" ")
+    contexts = [Context(c,
+                        articles,
+                        url_to_tag) for c in contexts_to_url.keys()]
+    # Create the last needed dictionary
+    url_to_article = {a.url: a for a in articles}
     while not exit_flag:
         # Main menu loop
         print("[*] Cognitive enhancer CLI")
@@ -25,9 +39,6 @@ def main():
         if context_choice == "X":
             exit_flag = True
         elif context_choice == "A":
-            articles = [Article(art_url) for art_url
-                        in url_to_tag.keys()]
-            url_to_article = {a.url: a for a in articles}
             create_new_context(contexts,
                                contexts_to_url,
                                url_to_article,
@@ -42,10 +53,12 @@ def main():
             lev_spaces = "   "
             print("[+] Available contexts:")
             for k in contexts_mapper.keys():
-                print(lev_spaces, k, contexts_mapper[k])
-            print("Choose a context number:")
+                print(lev_spaces, k, contexts_mapper[k].name)
+            print("Choose a context number or go back (X):")
             context_choice = input("> ")
-            if int(context_choice) in contexts_mapper.keys():
+            if context_choice == "X":
+                pass
+            elif int(context_choice) in contexts_mapper.keys():
                 context_choice = int(context_choice)
                 name = contexts_mapper[context_choice]
                 current_context = Context(name,
@@ -88,7 +101,7 @@ def save_contexts(contexts, contexts_to_url, contexts_fname):
     """ Utility to save contexts to file"""
     contexts_ofile = open(contexts_fname)
     for c in contexts:
-        for url in contexts_to_url[c]:
+        for url in contexts_to_url[c.name]:
             print(c.name + " : " + url)
     contexts_ofile.close()
 
@@ -150,7 +163,8 @@ def create_new_context(contexts,
                         if tag in tag_to_url.keys():
                             print("Tag: " + tag)
                             for url in tag_to_url[tag]:
-                                print(url_to_article[url].title)
+                                if url in url_to_article.keys():
+                                    print(url_to_article[url].title)
                         else:
                             print("[!!!] Invalid tag " + tag)
                     choice = input("> ")
@@ -158,7 +172,9 @@ def create_new_context(contexts,
                         for tag in tag_list:
                             if tag in tag_to_url.keys():
                                 for url in tag_to_url[tag]:
-                                    context.add_article(url_to_article[url])
+                                    if url in url_to_article.keys():
+                                        context.add_article(
+                                            url_to_article[url])
                         save_contexts(contexts,
                                       contexts_to_url,
                                       settings.contexts_fname)
@@ -207,10 +223,8 @@ def view_context(current_context,
     if tag_choice == 'Q':
         back_to_main_menu = True
     elif tag_choice in actions:
-        articles = [Article(art_url) for art_url
-                    in current_context.articles]
         if tag_choice == 'A':
-            for art in articles:
+            for art in current_context.articles:
                 print("[+++] ", art.title)
                 print("     Tags:", url_to_tag[art.url])
                 print()
@@ -218,10 +232,10 @@ def view_context(current_context,
             suggested_list = []
             print(suggested_list)
         elif tag_choice == 'St':
-            for article in articles:
+            for article in current_context.articles:
                 print("[+++] ", article.title)
                 print("     Tags:", url_to_tag[article.url])
-                article.suggest_tags(articles, url_to_tag)
+                article.suggest_tags(current_context.articles, url_to_tag)
                 print("     Suggested Tags:",
                       article.suggested_tags)
     return back_to_main_menu
