@@ -26,7 +26,7 @@ class Context:
         self.url_to_tag = url_to_tag
         self.tags = []
         for art in articles:
-            for tag in self.url_to_tag[art]:
+            for tag in self.url_to_tag[art.url]:
                 if tag not in self.tags:
                     self.tags.append(tag)
 
@@ -38,7 +38,7 @@ class Context:
             if tag not in self.tags:
                 self.tags.append(tag)
 
-    def suggest_articles(self):
+    def suggest_related_articles(self):
         """TODO """
         return
 
