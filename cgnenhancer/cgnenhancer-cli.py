@@ -26,10 +26,11 @@ def main():
                         url_to_tag) for c in contexts_to_url.keys()]
     # Create the last needed dictionary
     url_to_article = {a.url: a for a in articles}
+    # Utility for printing
+    contexts_mapper = {i + 1: contexts[i].name for i in range(len(contexts))}
     while not exit_flag:
         # Main menu loop
         print("[*] Cognitive enhancer CLI")
-        contexts_mapper = {i + 1: contexts[i] for i in range(len(contexts))}
         print("[+] You want to:")
         print("    (L) List your contexts")
         print("    (A) Add and modify a new context")
@@ -53,7 +54,7 @@ def main():
             lev_spaces = "   "
             print("[+] Available contexts:")
             for k in contexts_mapper.keys():
-                print(lev_spaces, k, contexts_mapper[k].name)
+                print(lev_spaces, k, contexts_mapper[k])
             print("Choose a context number or go back (X):")
             context_choice = input("> ")
             if context_choice == "X":
@@ -99,10 +100,10 @@ def contextualize_new(articles,
 
 def save_contexts(contexts, contexts_to_url, contexts_fname):
     """ Utility to save contexts to file"""
-    contexts_ofile = open(contexts_fname)
+    contexts_ofile = open(contexts_fname, "w")
     for c in contexts:
         for url in contexts_to_url[c.name]:
-            print(c.name + " : " + url)
+            contexts_ofile.write(c.name + " : " + url)
     contexts_ofile.close()
 
 
@@ -130,8 +131,9 @@ def create_new_context(contexts,
     context = Context(context_name,
                       articles,
                       url_to_tag)
-    # Add to the list of contexts
+    # Add to the list of contexts and to the dictionary
     contexts.append(context)
+    contexts_to_url[context.name] = list()
     print("Context " + context_name + " created successfully")
     print("Select a way to populate it:")
     print("   (T) Assign tags to this context")
@@ -175,6 +177,8 @@ def create_new_context(contexts,
                                     if url in url_to_article.keys():
                                         context.add_article(
                                             url_to_article[url])
+                                        contexts_to_url[context.name].append(
+                                            url)
                         save_contexts(contexts,
                                       contexts_to_url,
                                       settings.contexts_fname)
