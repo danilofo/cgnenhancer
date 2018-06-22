@@ -33,6 +33,6 @@ MACHINE LEARNING:
 
 WEB:
 ----
-- Access to FORBIDDEN url (using some browser?)
+- Access to FORBIDDEN url (using a browser API, or python-mechanize ?)
 - Use Twitter access tokens to improve tweets handling
 - Save pages to Wayback when downloading the first time
