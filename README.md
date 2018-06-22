@@ -10,7 +10,7 @@ CLI DESIGN:
 - Review the design the download of long lists of articles (Efficiency!)
 - Refactor the cli using bidict (See utilities.py)
 - Refactor the main using some good CLI program as reference
-- Add well-behaved progress bar when loading articles
+- Add a well-behaved progress bar when loading articles
 - Add a list of unreacheable urls
 - Add a list of forbidden urls
 
