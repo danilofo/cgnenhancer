@@ -9,11 +9,12 @@ The idea is to provide a simple and smart interface for periodic reviews of your
 The workflow is the following: (For each session)
 
 1. New links are downloaded from Pocket (for now, this is done manually)
-1bis. Tags can be suggested for the newly downloaded links
-2. New articles are contextualized (i.e., the user assigns them to contexts, possibly using AI suggestions)
-2bis. AI suggests the 'most similar' article inside _that_ context (i.e. AI increases user's long-term memory...)
-3. The user can create a new context, and assign articles to them (manually, or using tags)
-4. The user can view a context, list the articles it contains, and read them in the browser
+2. Tags can be suggested for the newly downloaded links
+3. New articles are contextualized (i.e., the user assigns them to contexts, possibly using AI suggestions)
+4. AI suggests the 'most similar' article inside _that_ context (i.e. AI increases user's long-term memory...)
+5. The user can create a new context, and assign articles to them (manually, or using tags)
+6. The user can view a context, list the articles it contains, and read them in the browser
+7. Every change is saved, hopefully in an additive way!
 
 ## Design principles
 
