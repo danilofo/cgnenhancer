@@ -3,6 +3,31 @@
 
 - To collaborate, commit to a feature branch.
 
+## How it works
+The idea is to provide a simple and smart interface for periodic reviews of your online readings. 
+
+The workflow is the following: (For each session)
+
+1. New links are downloaded from Pocket (for now, this is done manually)
+1bis. Tags can be suggested for the newly downloaded links
+2. New articles are contextualized (i.e., the user assigns them to contexts, possibly using AI suggestions)
+2bis. AI suggests the 'most similar' article inside _that_ context (i.e. AI increases user's long-term memory...)
+3. The user can create a new context, and assign articles to them (manually, or using tags)
+4. The user can view a context, list the articles it contains, and read them in the browser
+
+## Design principles
+
+The program should:
+
+- store and read the corpus of articles in an efficient (vectorized) way
+- be smart enough to result useful
+
+## Implementation
+The `class Context` ...
+
+The `class Articles` ...
+
+
 ## Todo
 
 CLI DESIGN:
@@ -36,6 +61,7 @@ MACHINE LEARNING:
 
 WEB:
 ----
+- Use the Pocket's API to download url directly
 - Access to FORBIDDEN url (using a browser API, or python-mechanize ?)
 - Use Twitter access tokens to improve tweets handling
 - Save pages to Wayback when downloading the first time (See the Wiki bot: https://meta.wikimedia.org/wiki/InternetArchiveBot)
