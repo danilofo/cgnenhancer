@@ -20,6 +20,7 @@ class Context:
                  url_to_tag):
         assert isinstance(name, str)
         assert isinstance(articles, list)
+        assert isinstance(articles[0], Article)
         # A context contains articles and tags
         self.name = name
         self.articles = articles
