@@ -38,4 +38,4 @@ WEB:
 ----
 - Access to FORBIDDEN url (using a browser API, or python-mechanize ?)
 - Use Twitter access tokens to improve tweets handling
-- Save pages to Wayback when downloading the first time
+- Save pages to Wayback when downloading the first time (See the Wiki bot: https://meta.wikimedia.org/wiki/InternetArchiveBot)
