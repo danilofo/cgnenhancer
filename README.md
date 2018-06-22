@@ -1,7 +1,7 @@
 # cgnenhancer
 - A tool for contextualizing news.
 
-- To collaborate, commit to a feature branch.
+- To collaborate, read this file, **code** and commit to a feature branch.
 
 ## How it works
 The idea is to provide a simple and smart interface for periodic reviews of your online readings. 
@@ -27,6 +27,9 @@ The program should:
 The `class Context` ...
 
 The `class Articles` ...
+
+## Guidelines
+- Follow the PEP8 style https://www.python.org/dev/peps/pep-0008/
 
 
 ## Todo
