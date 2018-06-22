@@ -7,6 +7,7 @@
 
 CLI DESIGN:
 -----------
+- Add unit testing
 - Review the design the download of long lists of articles (Efficiency!)
 - Refactor the cli using bidict (See utilities.py)
 - Refactor the main using some good CLI program as reference
@@ -16,10 +17,12 @@ CLI DESIGN:
 
 CLASS ARTICLE
 -------------
+- Test this class
 - Extract text from PDF
 
 CLASS CONTEXT
 -------------
+- Test this class
 - Solve a major flaw in the design: the main program uses a dict to map contexts onto urls, but that should be done using a member of objects of the Context class instead...
 
 MACHINE LEARNING:
